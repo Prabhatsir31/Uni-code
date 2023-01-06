@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css">    
+       
+</head>
+    <body>
+    <center>
+        <div id="main_heading">Uni-Search</div>
+        <div id="sideDrawer">
+            <div class="side_access">
+                <div id="op_one"></div>
+                <div id="op_two"></div>
+                <div id="op_three"></div>
+            </div>
+            <ul>
+                <li>Find Charactor</li>
+                <li><input placeholder="from..." id="fromUni" type="number" /></li>
+                <li><input placeholder="to..." id="toUni" type="number" /></li>
+                <li><input value="List" type="button" id="searchList" onClick="genChars()" /></li>
+            </ul>
+        </div>
+        <table class="search_tbl">
+            <tr class="search_row">
+                <td class="search_ipt">
+                    <input type="text" placeholder="type here..." id="input_unicode_number" />
+                </td>
+                <td class="search_btn">
+                    <div id="input_unicode_button" onClick="searchUnicodeInit()">
+                        Search</div>
+                </td>
+            </tr>
+        </table>
+</center>
+<center id="outputDisplay">
+</center>
+</body>
+
+</html>
+
+<script type="text/javascript">
+    "use strict";
+var boolCheck=true;
+window.onload=()=>{
+    let uni=document.getElementById("input_unicode_number");
+    uni.focus();
+}
+function searchUnicodeInit() {
+    var inputString = document.getElementById("input_unicode_number");
+    if (inputString.value == "") {
+        document.getElementById("outputDisplay").innerHTML = "Please Insert Any text in that field";
+        return;
+    }
+    var outputString = document.getElementById("outputDisplay");
+    var stringOut = "";
+    for (let x of inputString.value)
+        stringOut += searchUnicode(x);
+    outputString.innerHTML = "\
+  <table id='subtab' cellspacing=0>\
+  <tr class='tbl_round'>\
+  <td id='radL'>Char</td><td>\
+  Entity</td><td>\
+  JS Escape Sequence</td><td id='radR'>\
+  Unicode</th></tr>" + stringOut + "</table>";
+}
+
+function searchUnicode(stringVar) {
+    var outputNum, getHex, newString;
+    var hexList = ["\\&#117;", "\\&#117;000", "\\&#117;00", "\\&#117;0"];
+    outputNum = stringVar.charCodeAt(0);
+    getHex = outputNum.toString(16);
+    getHex = hexList[getHex.length] + getHex;
+    newString = "<tr><td>" + stringVar + "\
+    </td><td>&#38;&#35;" + outputNum + ";\
+    </td><td>" + getHex + "</td><td>\
+    " + outputNum + "</td></tr>"
+    return newString;
+}
+$(document).ready(function() {
+    $(".side_access").click(function() {
+        drawerCheck(boolCheck);
+    });
+});
+
+function genChars() {
+    var frmCode, toCode, newStr, returnCode;
+    newStr = "<table id='subtab' cellspacing=0>";
+    newStr += "<tr class='tbl_round'>\
+  <td id='radL'>Unicode</td><td id='radR'>\
+  Char</td></tr>"
+    frmCode = document.getElementById("fromUni").value;
+    toCode = document.getElementById("toUni").value;
+    returnCode = document.getElementById("outputDisplay");
+    if(!isNaN(frmCode)&&(toCode==''))
+    toCode=frmCode;
+if(((toCode-frmCode) > 5000) ||frmCode=='' || toCode=='') {
+        returnCode.innerHTML = "Allowed Difference is 5000<br/>Please Enter a valid Input";
+        drawerCheck(boolCheck);
+        return;
+    }  
+    returnCode.innerHTML = "Loading...";
+    drawerCheck(boolCheck);
+    setTimeout(function(){
+    for (let x = frmCode; x <= toCode; x++)
+        newStr += `
+        <tr><td>
+        ${x}</td><td>      
+        ${String.fromCharCode(x)}
+        </td></tr>`;
+    newStr+="</table>";
+    returnCode.innerHTML = newStr;
+    newStr=''
+    },800);
+}
+function drawerCheck(bool){
+boolCheck=bool;
+    if (boolCheck) {
+            $("#sideDrawer").addClass("sideOpen")
+            $("#op_one").addClass("additional1");
+            $("#op_two").addClass("additional2");
+            $("#op_three").addClass("additional3");
+            boolCheck = false;
+        } else {
+            $("#sideDrawer").removeClass("sideOpen")
+            $("#op_one").removeClass("additional1");
+            $("#op_two").removeClass("additional2");
+            $("#op_three").removeClass("additional3");
+            $("#listDisplay").html("");
+            $("#fromUni").val("");
+            $("#toUni").val("");
+            boolCheck = true;
+        }
+}
+</script>
